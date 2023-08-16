@@ -3,7 +3,7 @@ const notes = require('express').Router();
 const uuid = require('../helpers/uuid');
 
 // Import helper functions from fsUtils file
-const { readFromFile, readAndAppend } = require('../helpers/fsUtils');
+const { readFromFile, readAndAppend, writeToFile } = require('../helpers/fsUtils');
 
 // This API route is a GET Route for retrieving all the notes
 notes.get('/', (req, res) => {
@@ -17,7 +17,6 @@ notes.get('/:id', (req, res) => {
     readFromFile('./db/db.json')
         .then((data) => {
             let noteData = JSON.parse(data);
-            console.log(noteData)
             // Find note with matching ID
             const note = noteData.find((note) => note.id === noteId);
 
@@ -53,6 +52,30 @@ notes.post('/', (req, res) => {
       res.error('Error in adding note');
     }
   });
+
+  notes.delete('/:id', (req, res) => {
+    console.info(`${req.method} request received to delete a single note`);
+    const noteId = (req.params.id).toLowerCase();
+    readFromFile('./db/db.json')
+        .then((data) => {
+            let noteData = JSON.parse(data);
+            const noteIndex = noteData.findIndex((note) => note.id === noteId)
+            
+            if (noteIndex && noteIndex !== -1) {
+                noteData.splice(noteIndex, 1);
+                writeToFile(noteData, './db/db.json');
+                res.json(`Note deleted successfully 🗑️`)
+
+            } else {
+                res.status(404).json({error: 'Note not found'});
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json({ error: 'Server error'});
+        });
+
+}); 
   
   module.exports = notes;
   
