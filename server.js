@@ -23,6 +23,10 @@ app.get('/', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/index.html'))
 );
 
+app.get('/notes', (req, res) =>
+  res.sendFile(path.join(__dirname, '/public/notes.html'))
+);
+
 // Start the server and log a message upon successful startup
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`) 
