@@ -1,6 +1,6 @@
 # Note Taker
 ## Description
-![Note Taker](./assets/screenshot.png)
+![Note Taker](./public/assets/images/screenshot.png)
 
 This is a Note Taker designed by Yoon-Jae Kim after cloning from starter code provided by EdX. The purpose of this program is to solidify Express.js concepts learned from Module 11 of the NW University Coding Bootcamp. 
 
