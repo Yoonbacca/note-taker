@@ -1,5 +1,6 @@
 // Declare notes as a router that will call on index.js 
 const notes = require('express').Router();
+const uuid = require('../helpers/uuid');
 
 // Import helper functions from fsUtils file
 const { readFromFile, readAndAppend } = require('../helpers/fsUtils');
@@ -10,6 +11,29 @@ notes.get('/', (req, res) => {
     readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
   });
 
+notes.get('/:id', (req, res) => {
+    console.info(`${req.method} request received to get a single note`);
+    const noteId = (req.params.id).toLowerCase();
+    readFromFile('./db/db.json')
+        .then((data) => {
+            let noteData = JSON.parse(data);
+            console.log(noteData)
+            // Find note with matching ID
+            const note = noteData.find((note) => note.id === noteId);
+
+            if (note) {
+                res.json(note);
+            } else {
+                res.status(404).json({error: 'Note not found'});
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json({ error: 'Server error'});
+        });
+
+});
+
 // This API route is a POST Route for a new UX/UI tip
 notes.post('/', (req, res) => {
     console.info(`${req.method} request received to add a tip`);
@@ -19,7 +43,8 @@ notes.post('/', (req, res) => {
     if (req.body) {
       const newNote = {
         title,
-        text
+        text,
+        id: uuid(),
       };
   
       readAndAppend(newNote, './db/db.json');
